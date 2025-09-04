@@ -269,8 +269,9 @@ void DockWidgetTabPrivate::createLayout()
 	internal::setToolTip(CloseButton, QObject::tr("Close"));
 	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
 
-	MenuButton = new QPushButton();
+	MenuButton = createCloseButton();
 	MenuButton->setObjectName("tabMenuButton");
+	internal::setButtonIcon(MenuButton, QStyle::SP_TitleBarCloseButton, TabCloseIcon);
 	MenuButton->setContextMenuPolicy(Qt::CustomContextMenu);
 	MenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	MenuButton->setFocusPolicy(Qt::NoFocus);

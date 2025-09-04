@@ -43,6 +43,8 @@
 #include <QToolButton>
 #include <QPushButton>
 #include <QMenu>
+#include <qnamespace.h>
+#include <qsizepolicy.h>
 
 #include "ads_globals.h"
 #include "DockWidget.h"
@@ -74,6 +76,7 @@ struct DockWidgetTabPrivate
 	IFloatingWidget* FloatingWidget = nullptr;
 	QIcon Icon;
 	QAbstractButton* CloseButton = nullptr;
+	QAbstractButton* MenuButton = nullptr;
 	QSpacerItem* IconTextSpacer;
 	QPoint TabDragStartPosition;
 	QSize IconSize;
@@ -100,7 +103,6 @@ struct DockWidgetTabPrivate
 	{
 		return this->DragState == dragState;
 	}
-
 
 	/**
 	 * Starts floating of the dock widget that belongs to this title bar
@@ -144,6 +146,7 @@ struct DockWidgetTabPrivate
 		bool AllTabsHaveCloseButton = testConfigFlag(CDockManager::AllTabsHaveCloseButton);
 		bool TabHasCloseButton = (ActiveTabHasCloseButton && active) | AllTabsHaveCloseButton;
 		CloseButton->setVisible(DockWidgetClosable && TabHasCloseButton);
+		MenuButton->setVisible(DockWidgetClosable && TabHasCloseButton);
 	}
 
 	/**
@@ -157,6 +160,7 @@ struct DockWidgetTabPrivate
 		SizePolicy.setRetainSizeWhenHidden(Features.testFlag(CDockWidget::DockWidgetClosable)
 			&& testConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden));
 		CloseButton->setSizePolicy(SizePolicy);
+		MenuButton->setSizePolicy(SizePolicy);
 	}
 
 	template <typename T>
@@ -262,9 +266,17 @@ void DockWidgetTabPrivate::createLayout()
 	internal::setButtonIcon(CloseButton, QStyle::SP_TitleBarCloseButton, TabCloseIcon);
     CloseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     CloseButton->setFocusPolicy(Qt::NoFocus);
-    updateCloseButtonSizePolicy();
-	internal::setToolTip(CloseButton, QObject::tr("Close Tab"));
+	internal::setToolTip(CloseButton, QObject::tr("Close"));
 	_this->connect(CloseButton, SIGNAL(clicked()), SIGNAL(closeRequested()));
+
+	MenuButton = new QPushButton();
+	MenuButton->setObjectName("tabMenuButton");
+	MenuButton->setContextMenuPolicy(Qt::CustomContextMenu);
+	MenuButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	MenuButton->setFocusPolicy(Qt::NoFocus);
+	_this->connect(MenuButton, SIGNAL(clicked()), SLOT(openContextMenu()));
+
+    updateCloseButtonSizePolicy();
 
 	QFontMetrics fm(TitleLabel->font());
 	int Spacing = qRound(fm.height() / 4.0);
@@ -275,14 +287,22 @@ void DockWidgetTabPrivate::createLayout()
 	Layout->setSpacing(0);
 	_this->setLayout(Layout);
 	Layout->addWidget(CloseButton);
-	Layout->addSpacing(qRound(Spacing * 4.0 / 3.0));
 	Layout->addSpacing(Spacing);
 	Layout->addWidget(TitleLabel, 1);
-
+	Layout->addSpacing(Spacing);
+	Layout->addWidget(MenuButton);
+	Layout->addSpacing(qRound(Spacing * 4.0 / 3.0));
 
 	Layout->setAlignment(Qt::AlignCenter);
 
 	TitleLabel->setVisible(true);
+}
+
+void CDockWidgetTab::openContextMenu() {
+	auto pos =  QCursor::pos();
+	auto Menu = buildContextMenu(nullptr);
+	d->saveDragStartMousePosition(pos);
+	Menu->exec(pos);
 }
 
 //============================================================================
@@ -582,7 +602,6 @@ bool CDockWidgetTab::isActiveTab() const
 {
 	return d->IsActiveTab;
 }
-
 
 //============================================================================
 void CDockWidgetTab::setActiveTab(bool active)

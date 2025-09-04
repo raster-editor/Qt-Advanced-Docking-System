@@ -67,6 +67,7 @@ private Q_SLOTS:
 	void detachDockWidget();
 	void autoHideDockWidget();
 	void onAutoHideToActionClicked();
+	void openContextMenu();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent* ev) override;

@@ -103,6 +103,15 @@ ads--CDockWidgetTab[activeTab="true"] QLabel {
 }
 
 
+#tabMenuButton {
+	margin-top: 2px;
+	background: none;
+	border: none;
+	padding: -2px 0px;
+	qproperty-icon: url(:/ads/images/close-button.svg);
+	qproperty-iconSize: 16px;
+}
+
 /*****************************************************************************
  * CDockWidget
  *****************************************************************************/

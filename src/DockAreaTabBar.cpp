@@ -37,6 +37,7 @@
 #include <QApplication>
 #include <QtGlobal>
 #include <QTimer>
+#include <QPropertyAnimation>
 
 #include "FloatingDockContainer.h"
 #include "DockAreaWidget.h"
@@ -46,6 +47,7 @@
 #include "DockWidgetTab.h"
 
 #include <iostream>
+#include <qsizepolicy.h>
 
 
 namespace ads
@@ -144,6 +146,7 @@ CDockAreaTabBar::CDockAreaTabBar(CDockAreaWidget* parent) :
 	d->TabsLayout->setSpacing(0);
 	d->TabsLayout->addStretch(1);
 	d->TabsContainerWidget->setLayout(d->TabsLayout);
+	d->TabsContainerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setWidget(d->TabsContainerWidget);
 
     setFocusPolicy(Qt::NoFocus);
@@ -390,8 +393,16 @@ void CDockAreaTabBar::onTabWidgetMoved(const QPoint& GlobalPos)
 		break;
 	}
 
-	if (toIndex > -1)
+	if (toIndex > -1 && toIndex != fromIndex)
 	{
+		{
+			auto *anim = new QPropertyAnimation(MovingTab, "pos");
+			anim->setDuration(200);               // milliseconds
+			anim->setStartValue(tab(fromIndex)->pos());
+			anim->setEndValue(tab(toIndex)->pos());
+			anim->setEasingCurve(QEasingCurve::OutCubic); // choose easing
+			anim->start(QAbstractAnimation::DeleteWhenStopped);
+		}
 		d->TabsLayout->removeWidget(MovingTab);
 		d->TabsLayout->insertWidget(toIndex, MovingTab);
         ADS_PRINT("tabMoved from " << fromIndex << " to " << toIndex);

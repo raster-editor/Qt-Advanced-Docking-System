@@ -270,8 +270,8 @@ void DockAreaTitleBarPrivate::createAutoHideTitleLabel()
 void DockAreaTitleBarPrivate::createTabBar()
 {
 	TabBar = componentsFactory()->createDockAreaTabBar(DockArea);
-    TabBar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-	Layout->addWidget(TabBar);
+    TabBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	Layout->addWidget(TabBar, 1);
 	_this->connect(TabBar, SIGNAL(tabClosed(int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(tabOpened(int)), SLOT(markTabsMenuOutdated()));
 	_this->connect(TabBar, SIGNAL(tabInserted(int)), SLOT(markTabsMenuOutdated()));

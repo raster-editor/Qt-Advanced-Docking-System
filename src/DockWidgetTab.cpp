@@ -45,6 +45,7 @@
 #include <QMenu>
 #include <qnamespace.h>
 #include <qsizepolicy.h>
+#include <QPropertyAnimation>
 
 #include "ads_globals.h"
 #include "DockWidget.h"
@@ -313,8 +314,8 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
     QPoint Distance = internal::globalPositionOf(ev) - GlobalDragStartMousePosition;
     Distance.setY(0);
     auto TargetPos = Distance + TabDragStartPosition;
-    TargetPos.rx() = qMax(TargetPos.x(), 0);
-    TargetPos.rx() = qMin(_this->parentWidget()->rect().right() - _this->width() + 1, TargetPos.rx());
+    // TargetPos.rx() = qMax(TargetPos.x(), 0);
+    // TargetPos.rx() = qMin(_this->parentWidget()->rect().right() - _this->width() + 1, TargetPos.rx());
     _this->move(TargetPos);
     _this->raise();
 }

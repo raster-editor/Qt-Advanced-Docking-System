@@ -81,6 +81,8 @@ protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 public:
+	QPoint TabDragStartPosition;
+
 	using Super = QFrame;
 	/**
 	 * Default Constructor

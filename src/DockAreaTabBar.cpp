@@ -397,10 +397,10 @@ void CDockAreaTabBar::onTabWidgetMoved(const QPoint& GlobalPos)
 	{
 		{
 			auto *anim = new QPropertyAnimation(MovingTab, "pos");
-			anim->setDuration(200);               // milliseconds
+			anim->setDuration(200);
 			anim->setStartValue(tab(fromIndex)->pos());
 			anim->setEndValue(tab(toIndex)->pos());
-			anim->setEasingCurve(QEasingCurve::OutCubic); // choose easing
+			anim->setEasingCurve(QEasingCurve::OutCubic);
 			anim->start(QAbstractAnimation::DeleteWhenStopped);
 		}
 		d->TabsLayout->removeWidget(MovingTab);
@@ -411,8 +411,14 @@ void CDockAreaTabBar::onTabWidgetMoved(const QPoint& GlobalPos)
 	}
 	else
 	{
-		// Ensure that the moved tab is reset to its start position
-		d->TabsLayout->update();
+		{
+			auto *anim = new QPropertyAnimation(MovingTab, "pos");
+			anim->setDuration(200);
+			anim->setStartValue(MovingTab->pos());
+			anim->setEndValue(MovingTab->TabDragStartPosition);
+			anim->setEasingCurve(QEasingCurve::OutCubic);
+			anim->start(QAbstractAnimation::DeleteWhenStopped);
+		}
 	}
 }
 

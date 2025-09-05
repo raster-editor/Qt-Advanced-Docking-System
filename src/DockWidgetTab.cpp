@@ -79,7 +79,6 @@ struct DockWidgetTabPrivate
 	QAbstractButton* CloseButton = nullptr;
 	QAbstractButton* MenuButton = nullptr;
 	QSpacerItem* IconTextSpacer;
-	QPoint TabDragStartPosition;
 	QSize IconSize;
 
 	/**
@@ -313,7 +312,7 @@ void DockWidgetTabPrivate::moveTab(QMouseEvent* ev)
     ev->accept();
     QPoint Distance = internal::globalPositionOf(ev) - GlobalDragStartMousePosition;
     Distance.setY(0);
-    auto TargetPos = Distance + TabDragStartPosition;
+    auto TargetPos = Distance + _this->TabDragStartPosition;
     // TargetPos.rx() = qMax(TargetPos.x(), 0);
     // TargetPos.rx() = qMin(_this->parentWidget()->rect().right() - _this->width() + 1, TargetPos.rx());
     _this->move(TargetPos);
@@ -522,7 +521,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
 			{
         		parentWidget()->layout()->update();
 			}
-            d->startFloating();
+            // d->startFloating();
         }
     	return;
 	}
@@ -533,7 +532,7 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     	// restore it later
     	if (DraggingTab != d->DragState)
     	{
-    		d->TabDragStartPosition = this->pos();
+    		TabDragStartPosition = this->pos();
     	}
         d->DragState = DraggingTab;
 		return;

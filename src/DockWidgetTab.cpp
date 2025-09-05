@@ -494,38 +494,10 @@ void CDockWidgetTab::mouseMoveEvent(QMouseEvent* ev)
     }
 
     auto MappedPos = mapToParent(ev->pos());
-    bool MouseOutsideBar = (MappedPos.x() < 0) || (MappedPos.x() > parentWidget()->rect().right());
+    bool MouseOutsideBar = false;
     // Maybe a fixed drag distance is better here ?
     int DragDistanceY = qAbs(d->GlobalDragStartMousePosition.y() - internal::globalPositionOf(ev).y());
-    if (DragDistanceY >= CDockManager::startDragDistance() || MouseOutsideBar)
-	{
-		// If this is the last dock area in a dock container with only
-    	// one single dock widget it does not make  sense to move it to a new
-    	// floating widget and leave this one empty
-		if (d->DockArea->dockContainer()->isFloating()
-		 && d->DockArea->openDockWidgetsCount() == 1
-		 && d->DockArea->dockContainer()->visibleDockAreaCount() == 1)
-		{
-			return;
-		}
-
-
-    	// Floating is only allowed for widgets that are floatable
-		// We can create the drag preview if the widget is movable.
-		auto Features = d->DockWidget->features();
-        if (Features.testFlag(CDockWidget::DockWidgetFloatable) || (Features.testFlag(CDockWidget::DockWidgetMovable)))
-        {
-        	// If we undock, we need to restore the initial position of this
-        	// tab because it looks strange if it remains on its dragged position
-        	if (d->isDraggingState(DraggingTab))
-			{
-        		parentWidget()->layout()->update();
-			}
-            // d->startFloating();
-        }
-    	return;
-	}
-    else if (d->DockArea->openDockWidgetsCount() > 1
+    if (d->DockArea->openDockWidgetsCount() > 1
      && (internal::globalPositionOf(ev) - d->GlobalDragStartMousePosition).manhattanLength() >= QApplication::startDragDistance()) // Wait a few pixels before start moving
 	{
     	// If we start dragging the tab, we save its initial position to
